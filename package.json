@@ -1,0 +1,47 @@
+{
+  "name": "express-zod-validations",
+  "version": "0.1.0",
+  "description": "Express middleware to validate request (headers, params, query, body) using Zod",
+  "author": "Mattia Malonni",
+  "license": "MIT",
+  "keywords": [
+    "express-middleware",
+    "validation-middleware",
+    "zod-validation",
+    "request-validation",
+    "input-validation",
+    "data-validations",
+    "schema-validation",
+    "input-sanitization",
+    "custom-middleware",
+    "express",
+    "middleware",
+    "zod"
+  ],
+  "repository": "https://github.com/mattiamalonni/express-zod-validations",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "express": "^5",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@types/express": "^5",
+    "@types/node": "^20",
+    "express": "^5",
+    "zod": "^4",
+    "typescript": "^5"
+  }
+}
