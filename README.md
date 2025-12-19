@@ -1,5 +1,10 @@
 # express-zod-validations
 
+[![npm version](https://badge.fury.io/js/express-zod-validations.svg)](https://www.npmjs.com/package/express-zod-validations)
+[![Publish](https://github.com/mattiamalonni/express-zod-validations/actions/workflows/publish.yml/badge.svg)](https://github.com/mattiamalonni/express-zod-validations/actions/workflows/publish.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+
 Type-safe Express middleware for validating requests using [Zod](https://github.com/colinhacks/zod).
 
 ## Features

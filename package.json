@@ -1,6 +1,6 @@
 {
   "name": "express-zod-validations",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Express middleware to validate request (headers, params, query, body) using Zod",
   "author": "Mattia Malonni",
   "license": "MIT",
@@ -31,7 +31,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "express": "^5",
@@ -40,8 +41,11 @@
   "devDependencies": {
     "@types/express": "^5",
     "@types/node": "^20",
+    "@types/supertest": "^6.0.3",
     "express": "^5",
-    "zod": "^4",
-    "typescript": "^5"
+    "supertest": "^7.1.4",
+    "typescript": "^5",
+    "vitest": "^4.0.16",
+    "zod": "^4"
   }
 }
