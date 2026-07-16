@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
 import { ZodError, z } from "zod";
@@ -70,7 +70,7 @@ describe("ValidationError", () => {
         res.json({ success: true });
       });
 
-      app.use((err: unknown, _req: any, res: any, _next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         expect(err).toBeInstanceOf(ValidationError);
         expect((err as ValidationError).key).toBe("body");
         res.status(422).end();
@@ -86,7 +86,7 @@ describe("ValidationError", () => {
         res.json({ success: true });
       });
 
-      app.use((err: unknown, _req: any, res: any, _next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         expect(err).toBeInstanceOf(ValidationError);
         expect((err as ValidationError).key).toBe("query");
         res.status(422).end();
@@ -102,7 +102,7 @@ describe("ValidationError", () => {
         res.json({ success: true });
       });
 
-      app.use((err: unknown, _req: any, res: any, _next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         expect(err).toBeInstanceOf(ValidationError);
         expect((err as ValidationError).key).toBe("params");
         res.status(422).end();
@@ -118,7 +118,7 @@ describe("ValidationError", () => {
         res.json({ success: true });
       });
 
-      app.use((err: unknown, _req: any, res: any, _next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         expect(err).toBeInstanceOf(ValidationError);
         expect((err as ValidationError).issues.length).toBeGreaterThan(0);
         expect((err as ValidationError).issues[0].path).toContain("email");
@@ -135,7 +135,7 @@ describe("ValidationError", () => {
         res.json({ success: true });
       });
 
-      app.use((_err: unknown, _req: any, res: any, _next: any) => {
+      app.use((_err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         res.status(500).end();
       });
 

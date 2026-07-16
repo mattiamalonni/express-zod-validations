@@ -3,10 +3,10 @@ import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import {
-  validate,
-  validateBody,
-  validateHeaders,
-  type ValidationRequest,
+    validate,
+    validateBody,
+    validateHeaders,
+    type ValidationRequest,
 } from "../src/index";
 
 describe("validate multiple parts", () => {
@@ -30,7 +30,7 @@ describe("validate multiple parts", () => {
         res.json({
           params,
           body,
-          contentType: (headers as any)?.["content-type"],
+          contentType: (headers as Record<string, string>)?.["content-type"],
         });
       });
 

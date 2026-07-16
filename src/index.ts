@@ -18,12 +18,8 @@ export interface ValidationConfigs {
 
 type ValidationKey = "headers" | "params" | "query" | "body";
 
-export interface ValidationErrors extends Partial<
-  Record<ValidationKey, ZodError>
-> {}
-export interface ValidationValues extends Partial<
-  Record<ValidationKey, unknown>
-> {}
+export type ValidationErrors = Partial<Record<ValidationKey, ZodError>>;
+export type ValidationValues = Partial<Record<ValidationKey, unknown>>;
 
 export interface ValidationRequest extends Request {
   validationConfigs?: ValidationConfigs;

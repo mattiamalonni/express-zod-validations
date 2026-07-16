@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it } from "vitest";
 import { z } from "zod";
@@ -29,9 +29,9 @@ describe("configuration", () => {
       });
 
       let caughtError: unknown;
-      app.use((err: any, req: any, res: any, next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
         caughtError = err;
-        res.status(422).json({ zodError: true, issues: err.issues });
+        res.status(422).json({ zodError: true, issues: (err as ValidationError).issues });
       });
 
       const response = await request(app).post("/test").send({ email: "invalid" });
@@ -49,7 +49,7 @@ describe("configuration", () => {
         res.json({ success: true });
       });
 
-      app.use((err: any, req: any, res: any, next: any) => {
+      app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
         if (err instanceof ValidationError) {
           return res.status(400).json({ caught: true });
         }
