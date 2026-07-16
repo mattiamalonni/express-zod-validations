@@ -46,8 +46,8 @@ describe("validate multiple parts", () => {
 
     it("should collect errors from multiple parts", async () => {
       const schema = {
-        params: z.object({ id: z.string().uuid() }),
-        body: z.object({ email: z.string().email() }),
+        params: z.object({ id: z.uuid() }),
+        body: z.object({ email: z.email() }),
       };
 
       app.put("/users/:id", validate(schema), (req: ValidationRequest, res) => {

@@ -1,6 +1,6 @@
 {
   "name": "express-zod-validations",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Express middleware to validate request (headers, params, query, body) using Zod",
   "author": "Mattia Malonni",
   "license": "MIT",

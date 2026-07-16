@@ -32,7 +32,7 @@ describe("validateBody", () => {
 
   it("should store validation errors when throwErrors is false", async () => {
     const schema = z.object({
-      email: z.string().email(),
+      email: z.email(),
     });
 
     app.post("/test", validateBody(schema), (req: ValidationRequest, res) => {

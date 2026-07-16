@@ -1,6 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError, type ZodType } from "zod";
 
+export class ValidationError extends ZodError {
+  public readonly key: string;
+
+  constructor(key: string, cause: ZodError) {
+    super(cause.issues);
+    this.name = "ValidationError";
+    this.key = key;
+  }
+}
+
 export interface ValidationConfigs {
   throwErrors?: boolean;
   overwriteRequest?: boolean;
@@ -57,7 +67,7 @@ export const validate =
         } else {
           req.validationErrors[key] = result.error;
           delete req.validationValues[key];
-          if (throwErrors) return next(result.error);
+          if (throwErrors) return next(new ValidationError(key, result.error));
         }
       }
 

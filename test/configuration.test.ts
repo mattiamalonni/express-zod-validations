@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   expressZodValidations,
   validateBody,
+  ValidationError,
   type ValidationRequest,
 } from "../src/index";
 
@@ -19,7 +20,7 @@ describe("configuration", () => {
   describe("throwErrors option", () => {
     it("should throw validation errors when throwErrors is true", async () => {
       const schema = z.object({
-        email: z.string().email(),
+        email: z.email(),
       });
 
       app.use(expressZodValidations({ throwErrors: true }));
@@ -27,23 +28,21 @@ describe("configuration", () => {
         res.json({ success: true });
       });
 
+      let caughtError: unknown;
       app.use((err: any, req: any, res: any, next: any) => {
-        if (err.name === "ZodError") {
-          return res.status(422).json({ zodError: true, issues: err.errors });
-        }
-        next(err);
+        caughtError = err;
+        res.status(422).json({ zodError: true, issues: err.issues });
       });
 
-      const response = await request(app)
-        .post("/test")
-        .send({ email: "invalid" });
+      const response = await request(app).post("/test").send({ email: "invalid" });
 
+      expect(caughtError).toBeInstanceOf(ValidationError);
       expect(response.status).toBe(422);
       expect(response.body.zodError).toBe(true);
     });
 
     it("should apply global throwErrors config", async () => {
-      const schema = z.object({ email: z.string().email() });
+      const schema = z.object({ email: z.email() });
 
       app.use(expressZodValidations({ throwErrors: true }));
       app.post("/test", validateBody(schema), (req, res) => {
@@ -51,7 +50,7 @@ describe("configuration", () => {
       });
 
       app.use((err: any, req: any, res: any, next: any) => {
-        if (err.name === "ZodError") {
+        if (err instanceof ValidationError) {
           return res.status(400).json({ caught: true });
         }
         next(err);

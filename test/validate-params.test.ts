@@ -14,14 +14,14 @@ describe("validateParams", () => {
 
   it("should validate URL parameters", async () => {
     const schema = z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
     });
 
     app.get(
       "/users/:id",
       validateParams(schema),
       (req: ValidationRequest, res) => {
-        res.json(req.validationValues.params);
+        res.json(req.validationValues?.params);
       },
     );
 
@@ -34,7 +34,7 @@ describe("validateParams", () => {
 
   it("should fail on invalid params", async () => {
     const schema = z.object({
-      id: z.string().uuid(),
+      id: z.uuid(),
     });
 
     app.get(

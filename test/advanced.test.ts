@@ -36,7 +36,7 @@ describe("advanced", () => {
 
     it("should handle complex transformations", async () => {
       const schema = z.object({
-        email: z.string().email().toLowerCase(),
+        email: z.email().toLowerCase(),
         tags: z.string().transform((val) => val.split(",")),
         active: z
           .string()

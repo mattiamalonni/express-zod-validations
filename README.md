@@ -34,7 +34,7 @@ app.use(express.json());
 // Define your schema
 const userSchema = z.object({
   name: z.string().min(2),
-  email: z.string().email(),
+  email: z.email(),
   age: z.number().int().positive().optional(),
 });
 
@@ -73,7 +73,7 @@ app.post("/users", validateBody(z.object({ name: z.string() })), handler);
 // URL params validation
 app.get(
   "/users/:id",
-  validateParams(z.object({ id: z.string().uuid() })),
+  validateParams(z.object({ id: z.uuid() })),
   handler,
 );
 
@@ -266,7 +266,7 @@ app.get("/posts", validateQuery(paginationSchema), (req, res) => {
 
 ```typescript
 const createUserSchema = z.object({
-  email: z.string().email().toLowerCase(),
+  email: z.email().toLowerCase(),
   name: z.string().trim().min(2),
   bio: z
     .string()
