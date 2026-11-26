@@ -161,6 +161,25 @@ app.use(
   When `false`, parsed values are stored in `req.validationValues`.
   Parsed values are always available in `req.validationValues`, regardless of this option.
 
+### Per-Request Configuration
+
+The global configuration is stored on the request, so any middleware placed **before** the
+validator can override it for a single route:
+
+```typescript
+app.post(
+  '/admin',
+  (req, _res, next) => {
+    (req as ValidationRequest).validationConfigs = { throwErrors: true };
+    next();
+  },
+  validateBody(userSchema),
+  handler,
+);
+```
+
+The `ValidationRequest` type is imported from the package.
+
 ### Per-Route Validation Options
 
 Pass Zod parsing options as a second parameter:
