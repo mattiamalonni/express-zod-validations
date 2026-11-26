@@ -36,6 +36,32 @@ describe('overwriteRequest', () => {
     expect(response.body.values).toEqual({ page: 3 });
   });
 
+  it('merges parsed headers instead of dropping the standard ones', async () => {
+    app.get(
+      '/test',
+      validateHeaders(z.object({ 'x-token': z.string().toLowerCase() })),
+      (req: ValidationRequest, res) => {
+        res.json({
+          token: req.headers['x-token'],
+          host: req.headers.host,
+          hostFromGetter: req.get('host'),
+          accept: req.get('accept'),
+        });
+      },
+    );
+
+    const response = await request(app)
+      .get('/test')
+      .set('x-token', 'ABC')
+      .set('accept', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body.token).toBe('abc');
+    expect(response.body.host).toBeTruthy();
+    expect(response.body.hostFromGetter).toBe(response.body.host);
+    expect(response.body.accept).toBe('application/json');
+  });
+
   it('overwrites req.params and req.headers', async () => {
     app.get(
       '/test/:id',

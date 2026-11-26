@@ -10,7 +10,7 @@ Type-safe Express middleware for validating requests using [Zod](https://github.
 ## Features
 
 - 🛡️ **Type-safe validation** - Full TypeScript support with Zod schemas
-- 🚀 **Async by default** - Uses `safeParseAsync` for async transformations
+- ⚡ **Sync by default** - Uses `safeParse`; `validateAsync` helpers cover async transformations
 - 🎯 **Granular validation** - Validate body, params, query, and headers independently
 - 🔧 **Flexible error handling** - Choose between storing or throwing validation errors
 - 📦 **Zero config** - Works out of the box with sensible defaults
@@ -113,6 +113,10 @@ app.put('/posts/:id', validate(schemas), (req: ValidationRequest<typeof schemas>
 ### Chain Multiple Validators
 
 ```typescript
+const authSchema = z.object({ authorization: z.string().startsWith('Bearer ') });
+const idSchema = z.object({ id: z.uuid() });
+const postSchema = z.object({ title: z.string(), content: z.string().min(10) });
+
 app.put(
   '/posts/:id',
   validateHeaders(authSchema),
@@ -147,12 +151,14 @@ app.use(
 - **`throwErrors`** (default: `false`)
   When `true`, validation errors are passed to `next(error)`, triggering your Express error handler.
   When `false`, errors are stored in `req.validationErrors` and execution continues.
-  With `validate()` on multiple parts, only the **first** failing key is thrown; earlier keys are
-  still recorded in `req.validationErrors`.
+  With `validate()` on multiple parts, only the **first** failing key is thrown, and **no** results
+  are written to the request (validation is atomic).
 
 - **`overwriteRequest`** (default: `false`)
-  When `true`, replaces `req.body`, `req.params`, `req.query` and `req.headers` with the parsed and
-  transformed values from Zod. When `false`, parsed values are stored in `req.validationValues`.
+  When `true`, replaces `req.body`, `req.params` and `req.query` with the parsed and transformed
+  values from Zod. `req.headers` is **merged** rather than replaced, so standard headers such as
+  `host` and `content-type` survive even when the schema strips unknown keys.
+  When `false`, parsed values are stored in `req.validationValues`.
   Parsed values are always available in `req.validationValues`, regardless of this option.
 
 ### Per-Route Validation Options
@@ -165,6 +171,26 @@ validateBody(userSchema, {
   error: (issue) => `Custom error: ${issue.path.join('.')}`,
 });
 ```
+
+### Sync vs Async Validation
+
+`validate` and `validateBody` / `validateParams` / `validateQuery` / `validateHeaders` use Zod's
+synchronous `safeParse` and return a plain middleware. When a schema contains async refinements or
+transforms, use the `validateAsync` variants (`validateAsync`, `validateBodyAsync`,
+`validateParamsAsync`, `validateQueryAsync`, `validateHeadersAsync`), which call `safeParseAsync`:
+
+```typescript
+import { validateBodyAsync } from 'express-zod-validations';
+
+const userSchema = z.object({
+  username: z.string().refine(async (value) => isAvailable(value), 'already taken'),
+});
+
+app.post('/users', validateBodyAsync(userSchema), handler);
+```
+
+Using an async schema with the synchronous helpers forwards Zod's
+`Encountered Promise during synchronous parse` error to `next(error)`.
 
 ## Accessing Validation Results
 
@@ -326,11 +352,16 @@ const strictSchema = z.object({ name: z.string() }).strict();
 
 ### Functions
 
-- `validate(props, options?)` - Validate multiple request parts
-- `validateBody(schema, options?)` - Validate request body
-- `validateParams(schema, options?)` - Validate URL parameters
-- `validateQuery(schema, options?)` - Validate query string
-- `validateHeaders(schema, options?)` - Validate headers
+- `validate(props, options?)` - Validate multiple request parts (sync)
+- `validateBody(schema, options?)` - Validate request body (sync)
+- `validateParams(schema, options?)` - Validate URL parameters (sync)
+- `validateQuery(schema, options?)` - Validate query string (sync)
+- `validateHeaders(schema, options?)` - Validate headers (sync)
+- `validateAsync(props, options?)` - Validate multiple parts with `safeParseAsync`
+- `validateBodyAsync(schema, options?)` - Async body validation
+- `validateParamsAsync(schema, options?)` - Async params validation
+- `validateQueryAsync(schema, options?)` - Async query validation
+- `validateHeadersAsync(schema, options?)` - Async headers validation
 - `expressZodValidations(config)` - Set global configuration
 
 ### Types
@@ -348,10 +379,11 @@ Development uses Node 22.22 (see `.node-version`) because the `oxlint.config.ts`
 Node >= 20.19.
 
 ```bash
-npm test          # vitest
-npm run lint      # oxlint
-npm run format    # oxfmt (write)
-npm run build     # tsc
+npm test           # vitest
+npm run typecheck  # tsc (including type tests)
+npm run lint       # oxlint
+npm run format     # oxfmt (write)
+npm run build      # tsc (library only)
 ```
 
 ## License

@@ -6,6 +6,7 @@ import {
   expressZodValidations,
   validate,
   validateBody,
+  validateBodyAsync,
   ValidationError,
   type ValidationRequest,
 } from '../src/index';
@@ -45,7 +46,7 @@ describe('validation options and error paths', () => {
       token: z.string().refine(async (value) => value === 'ok', 'invalid token'),
     });
 
-    app.post('/test', validateBody(schema), (req: ValidationRequest, res) => {
+    app.post('/test', validateBodyAsync(schema), (req: ValidationRequest, res) => {
       if (req.validationErrors?.body) {
         return res.status(400).json({
           messages: req.validationErrors.body.issues.map((issue) => issue.message),
@@ -62,7 +63,7 @@ describe('validation options and error paths', () => {
     expect(response.body.values).toBeNull();
   });
 
-  it('throws only the first failing key when throwErrors is true', async () => {
+  it('throws the first failing key without applying partial results', async () => {
     app.use(expressZodValidations({ throwErrors: true }));
     app.put(
       '/test/:id',
@@ -74,8 +75,14 @@ describe('validation options and error paths', () => {
         res.json({ success: true });
       },
     );
-    app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+    let state: { values?: unknown; errors?: unknown } | undefined;
+    app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
       if (err instanceof ValidationError) {
+        const validationRequest = req as ValidationRequest;
+        state = {
+          values: validationRequest.validationValues,
+          errors: validationRequest.validationErrors,
+        };
         return res.status(422).json({ name: err.name, key: err.key });
       }
       res.status(500).end();
@@ -85,5 +92,7 @@ describe('validation options and error paths', () => {
 
     expect(response.status).toBe(422);
     expect(response.body).toEqual({ name: 'ValidationError', key: 'params' });
+    // Nothing is written to the request when an error is thrown.
+    expect(state).toEqual({ values: undefined, errors: undefined });
   });
 });

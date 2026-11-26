@@ -20,7 +20,7 @@ describe('validateQuery', () => {
     });
 
     app.get('/items', validateQuery(schema), (req: ValidationRequest, res) => {
-      res.json(req.validationValues.query);
+      res.json(req.validationValues?.query);
     });
 
     const response = await request(app).get('/items?page=2&limit=20&sort=asc');
@@ -37,7 +37,7 @@ describe('validateQuery', () => {
     });
 
     app.get('/items', validateQuery(schema), (req: ValidationRequest, res) => {
-      res.json(req.validationValues.query);
+      res.json(req.validationValues?.query);
     });
 
     const response = await request(app).get('/items');
