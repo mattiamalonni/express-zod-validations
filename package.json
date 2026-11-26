@@ -18,7 +18,10 @@
   ],
   "license": "MIT",
   "author": "Mattia Malonni",
-  "repository": "https://github.com/mattiamalonni/express-zod-validations",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattiamalonni/express-zod-validations.git"
+  },
   "files": [
     "dist"
   ],
