@@ -4,6 +4,8 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+## 0.2.1 - 2026-11-26
+
 ### Added
 
 - Coverage script and thresholds (`npm run coverage`, provider v8).
