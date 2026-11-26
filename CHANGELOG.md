@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- Added `retry: 1` to Vitest to guard against rare intermittent supertest failures, ignored local
+  `*.tgz` artifacts, switched the npm badge to shields.io and included `vitest.config.ts` in the
+  typecheck.
+
 ## 0.2.1 - 2026-11-26
 
 ### Added
