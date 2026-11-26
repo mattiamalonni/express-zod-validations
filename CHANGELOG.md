@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file.
 
 ## Unreleased
 
+### Added
+
+- Coverage script and thresholds (`npm run coverage`, provider v8).
+
+### Changed
+
+- Updated dev dependencies: `express` 5.3.0, `vitest` 4.1.12 and `@vitest/coverage-v8` 4.1.12.
+  `npm audit` now reports zero vulnerabilities.
+- Bumped `actions/checkout` to v7.0.1 and `actions/setup-node` to v7.1.0 in the publish workflow.
+- `CHANGELOG.md` is now included in the published npm package.
+- Documentation placeholders clarified and type tests now cover Express route registration.
+
 ## 0.2.0 - 2026-11-26
 
 ### Added

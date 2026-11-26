@@ -23,7 +23,8 @@
     "url": "git+https://github.com/mattiamalonni/express-zod-validations.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "CHANGELOG.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -38,6 +39,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
+    "coverage": "vitest run --coverage",
     "typecheck": "tsc -p tsconfig.test.json",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -49,12 +51,13 @@
     "@types/express": "^5",
     "@types/node": "^20",
     "@types/supertest": "^6.0.3",
-    "express": "^5",
+    "@vitest/coverage-v8": "^4.1.12",
+    "express": "^5.3.0",
     "oxfmt": "^0.80.0",
     "oxlint": "^1.95.0",
     "supertest": "^7.1.4",
     "typescript": "^5",
-    "vitest": "^4.0.16",
+    "vitest": "^4.1.12",
     "zod": "^4.6.7"
   },
   "peerDependencies": {

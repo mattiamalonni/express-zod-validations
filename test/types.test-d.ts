@@ -1,4 +1,4 @@
-import type { NextFunction, Response } from 'express';
+import express, { type NextFunction, type Response } from 'express';
 import { z } from 'zod';
 import {
   validate,
@@ -53,6 +53,26 @@ declare const next: NextFunction;
 declare const response: Response;
 syncMiddleware(request, response, next);
 void asyncMiddleware(request, response, next);
+
+// Both middleware shapes register cleanly on an Express app.
+const app = express();
+app.post('/sync', validateBody(schema), (req: ValidationRequest<{ body: typeof schema }>, res) => {
+  res.json(req.validationValues?.body);
+});
+app.post(
+  '/async',
+  validateBodyAsync(schema),
+  (req: ValidationRequest<{ body: typeof schema }>, res) => {
+    res.json(req.validationValues?.body);
+  },
+);
+app.put(
+  '/multi',
+  validate({ body: schema }),
+  (req: ValidationRequest<{ body: typeof schema }>, res) => {
+    res.json(req.validationValues?.body);
+  },
+);
 
 void name;
 void age;

@@ -70,6 +70,7 @@ import {
   validateHeaders,
 } from 'express-zod-validations';
 
+// `handler` below is your normal Express route handler
 // Body validation
 app.post('/users', validateBody(z.object({ name: z.string() })), handler);
 
@@ -122,7 +123,7 @@ app.put(
   validateHeaders(authSchema),
   validateParams(idSchema),
   validateBody(postSchema),
-  postsController.update,
+  postsController.update, // your route handler
 );
 ```
 
@@ -201,6 +202,8 @@ transforms, use the `validateAsync` variants (`validateAsync`, `validateBodyAsyn
 ```typescript
 import { validateBodyAsync } from 'express-zod-validations';
 
+declare function isAvailable(username: string): Promise<boolean>;
+
 const userSchema = z.object({
   username: z.string().refine(async (value) => isAvailable(value), 'already taken'),
 });
@@ -271,6 +274,7 @@ app.post(
 );
 
 // ValidationError extends ZodError and carries the failing key
+declare const someZodError: z.ZodError;
 const error = new ValidationError('body', someZodError);
 console.log(error.key);
 ```
@@ -382,6 +386,9 @@ const strictSchema = z.object({ name: z.string() }).strict();
 - `validateQueryAsync(schema, options?)` - Async query validation
 - `validateHeadersAsync(schema, options?)` - Async headers validation
 - `expressZodValidations(config)` - Set global configuration
+- default export: `validate` (same signature as the named export)
+
+Release notes are in [CHANGELOG.md](./CHANGELOG.md).
 
 ### Types
 

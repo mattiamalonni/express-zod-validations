@@ -6,6 +6,9 @@ import {
   validateBody,
   validateBodyAsync,
   validateHeaders,
+  validateHeadersAsync,
+  validateParamsAsync,
+  validateQueryAsync,
   ValidationError,
   type ValidationRequest,
 } from '../src/index';
@@ -31,6 +34,25 @@ describe('validator modes and edge cases', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.values).toEqual({ name: 'John' });
+  });
+
+  it('supports the async variants for params, query and headers', async () => {
+    app.get(
+      '/test/:id',
+      validateParamsAsync(z.object({ id: z.string() })),
+      validateQueryAsync(z.object({ page: z.coerce.number() })),
+      validateHeadersAsync(z.object({ 'x-token': z.string() })),
+      (req: ValidationRequest, res) => {
+        res.json({ values: req.validationValues });
+      },
+    );
+
+    const response = await request(app).get('/test/42?page=3').set('x-token', 'abc');
+
+    expect(response.status).toBe(200);
+    expect(response.body.values.params).toEqual({ id: '42' });
+    expect(response.body.values.query).toEqual({ page: 3 });
+    expect(response.body.values.headers).toEqual({ 'x-token': 'abc' });
   });
 
   it('forwards a clear error when an async schema is used with the sync validator', async () => {
