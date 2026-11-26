@@ -1,15 +1,15 @@
-import express, { Express, NextFunction, Request, Response } from "express";
-import request from "supertest";
-import { beforeEach, describe, expect, it } from "vitest";
-import { z } from "zod";
+import express, { Express, NextFunction, Request, Response } from 'express';
+import request from 'supertest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { z } from 'zod';
 import {
   expressZodValidations,
   validateBody,
   ValidationError,
   type ValidationRequest,
-} from "../src/index";
+} from '../src/index';
 
-describe("configuration", () => {
+describe('configuration', () => {
   let app: Express;
 
   beforeEach(() => {
@@ -17,14 +17,14 @@ describe("configuration", () => {
     app.use(express.json());
   });
 
-  describe("throwErrors option", () => {
-    it("should throw validation errors when throwErrors is true", async () => {
+  describe('throwErrors option', () => {
+    it('should throw validation errors when throwErrors is true', async () => {
       const schema = z.object({
         email: z.email(),
       });
 
       app.use(expressZodValidations({ throwErrors: true }));
-      app.post("/test", validateBody(schema), (req: ValidationRequest, res) => {
+      app.post('/test', validateBody(schema), (req: ValidationRequest, res) => {
         res.json({ success: true });
       });
 
@@ -34,18 +34,18 @@ describe("configuration", () => {
         res.status(422).json({ zodError: true, issues: (err as ValidationError).issues });
       });
 
-      const response = await request(app).post("/test").send({ email: "invalid" });
+      const response = await request(app).post('/test').send({ email: 'invalid' });
 
       expect(caughtError).toBeInstanceOf(ValidationError);
       expect(response.status).toBe(422);
       expect(response.body.zodError).toBe(true);
     });
 
-    it("should apply global throwErrors config", async () => {
+    it('should apply global throwErrors config', async () => {
       const schema = z.object({ email: z.email() });
 
       app.use(expressZodValidations({ throwErrors: true }));
-      app.post("/test", validateBody(schema), (req, res) => {
+      app.post('/test', validateBody(schema), (req, res) => {
         res.json({ success: true });
       });
 
@@ -56,50 +56,44 @@ describe("configuration", () => {
         next(err);
       });
 
-      const response = await request(app)
-        .post("/test")
-        .send({ email: "invalid" });
+      const response = await request(app).post('/test').send({ email: 'invalid' });
 
       expect(response.status).toBe(400);
       expect(response.body.caught).toBe(true);
     });
   });
 
-  describe("overwriteRequest option", () => {
-    it("should overwrite request body when overwriteRequest is true", async () => {
+  describe('overwriteRequest option', () => {
+    it('should overwrite request body when overwriteRequest is true', async () => {
       const schema = z.object({
         email: z.string().toLowerCase(),
       });
 
       app.use(expressZodValidations({ overwriteRequest: true }));
-      app.post("/test", validateBody(schema), (req, res) => {
+      app.post('/test', validateBody(schema), (req, res) => {
         res.json({ body: req.body });
       });
 
-      const response = await request(app)
-        .post("/test")
-        .send({ email: "TEST@EXAMPLE.COM" });
+      const response = await request(app).post('/test').send({ email: 'TEST@EXAMPLE.COM' });
 
       expect(response.status).toBe(200);
-      expect(response.body.body).toEqual({ email: "test@example.com" });
+      expect(response.body.body).toEqual({ email: 'test@example.com' });
     });
 
-    it("should apply global overwriteRequest config", async () => {
+    it('should apply global overwriteRequest config', async () => {
       const schema = z.object({
         text: z.string().trim(),
       });
 
       app.use(expressZodValidations({ overwriteRequest: true }));
-      app.post("/test", validateBody(schema), (req, res) => {
+      app.post('/test', validateBody(schema), (req, res) => {
         res.json({ original: req.body });
       });
 
-      const response = await request(app)
-        .post("/test")
-        .send({ text: "  trimmed  " });
+      const response = await request(app).post('/test').send({ text: '  trimmed  ' });
 
       expect(response.status).toBe(200);
-      expect(response.body.original).toEqual({ text: "trimmed" });
+      expect(response.body.original).toEqual({ text: 'trimmed' });
     });
   });
 });
